@@ -24,6 +24,11 @@ public class RegisterForm extends javax.swing.JFrame {
      */
     public RegisterForm() {
         initComponents();
+        txtUsername.setText("");
+        txtEmail.setText("");
+        txtPassword.setText("");             
+        txtConfirmPass.setText("");
+        
     }
 
     /**
@@ -38,6 +43,7 @@ public class RegisterForm extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         lblUsername = new javax.swing.JLabel();
         txtUsername = new javax.swing.JTextField();
         lblPassword = new javax.swing.JLabel();
@@ -46,15 +52,21 @@ public class RegisterForm extends javax.swing.JFrame {
         txtConfirmPass = new javax.swing.JPasswordField();
         btnKembali = new javax.swing.JButton();
         btnDaftar = new javax.swing.JButton();
+        lblEmail = new javax.swing.JLabel();
+        txtEmail = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(143, 179, 226));
-        jPanel1.setPreferredSize(new java.awt.Dimension(4540, 350));
+        jPanel1.setPreferredSize(new java.awt.Dimension(600, 450));
 
         jPanel2.setBackground(new java.awt.Color(30, 46, 79));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/images/resep logo.png"))); // NOI18N
+
+        jLabel3.setFont(new java.awt.Font("Bahnschrift", 1, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("ChefNote");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -63,13 +75,20 @@ public class RegisterForm extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addComponent(jLabel3)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -85,6 +104,11 @@ public class RegisterForm extends javax.swing.JFrame {
         lblPassword.setText("Password");
 
         txtPassword.setText("jPasswordField1");
+        txtPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPasswordActionPerformed(evt);
+            }
+        });
 
         lblConfirm.setText("Konfirmasi Password");
 
@@ -104,6 +128,15 @@ public class RegisterForm extends javax.swing.JFrame {
             }
         });
 
+        lblEmail.setText("Email");
+
+        txtEmail.setText(" ");
+        txtEmail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtEmailActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -111,17 +144,19 @@ public class RegisterForm extends javax.swing.JFrame {
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(59, 59, 59)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lblEmail)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(btnKembali)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 192, Short.MAX_VALUE)
                         .addComponent(btnDaftar))
-                    .addComponent(lblConfirm, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblPassword, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblUsername, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtUsername, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtConfirmPass, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(lblConfirm)
+                    .addComponent(lblPassword)
+                    .addComponent(lblUsername)
+                    .addComponent(txtUsername)
+                    .addComponent(txtPassword)
+                    .addComponent(txtConfirmPass)
+                    .addComponent(txtEmail))
                 .addContainerGap(59, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -132,7 +167,11 @@ public class RegisterForm extends javax.swing.JFrame {
                 .addComponent(lblUsername)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
+                .addGap(18, 18, 18)
+                .addComponent(lblEmail)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(lblPassword)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -144,7 +183,7 @@ public class RegisterForm extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnKembali)
                     .addComponent(btnDaftar))
-                .addGap(15, 15, 15))
+                .addGap(25, 25, 25))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -155,14 +194,14 @@ public class RegisterForm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
-        // TODO add your handling code here:
+        txtEmail.requestFocus();
     }//GEN-LAST:event_txtUsernameActionPerformed
 
     private void btnKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKembaliActionPerformed
@@ -188,6 +227,13 @@ public class RegisterForm extends javax.swing.JFrame {
         String passwordHash = CryptoUtil.hashPassword(password);
 
         try (Connection conn = DBUtil.getConnection()) {
+            String email = txtEmail.getText().trim();
+
+            if (email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Email wajib diisi.");
+                return;
+            }
+            
             String sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, username);
@@ -202,6 +248,14 @@ public class RegisterForm extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_btnDaftarActionPerformed
+
+    private void txtEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEmailActionPerformed
+        txtPassword.requestFocus();
+    }//GEN-LAST:event_txtEmailActionPerformed
+
+    private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
+        txtConfirmPass.requestFocus();
+    }//GEN-LAST:event_txtPasswordActionPerformed
 
     /**
      * @param args the command line arguments
@@ -242,12 +296,15 @@ public class RegisterForm extends javax.swing.JFrame {
     private javax.swing.JButton btnDaftar;
     private javax.swing.JButton btnKembali;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblConfirm;
+    private javax.swing.JLabel lblEmail;
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lblUsername;
     private javax.swing.JPasswordField txtConfirmPass;
+    private javax.swing.JTextField txtEmail;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables

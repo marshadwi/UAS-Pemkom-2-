@@ -8,13 +8,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
-
-import db.DBUtil;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import model.User;
 import util.CryptoUtil;
-import util.I18nUtil;
+import db.DBUtil;
+import java.awt.Font;
+import javax.swing.SwingUtilities;
 import view.MainMenuForm;
-
+import view.RegisterForm;
 
 /**
  *
@@ -22,11 +24,74 @@ import view.MainMenuForm;
  */
 public class LoginForm extends javax.swing.JFrame {
 
-    /**
-     * Creates new form LoginForm
-     */
+    private ResourceBundle bundle;
+
     public LoginForm() {
         initComponents();
+        ProgressBar.setVisible(false);  // Awalnya disembunyikan
+        ProgressBar.setIndeterminate(true); // Mode loading animasi
+
+        txtUsername.setText("");
+        txtPassword.setText("");
+        applyFont();
+
+        // Panggil applyLanguage() pertama kali
+        applyLanguage();
+
+        System.out.println("Selamat datang di ChefNote!");
+
+        lblSignup.setText("<html><u>Signup</u></html>");
+        lblSignup.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lblSignup.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                new RegisterForm().setVisible(true);
+                dispose();
+            }
+        });
+
+        cmbLanguage.addActionListener(e -> applyLanguage());
+    }
+
+    private void applyFont() {
+        // Tidak ada implementasi, aman
+    }
+
+    // ⬇️ applyLanguage() HARUS di luar constructor
+    private void applyLanguage() {
+        String language;
+        String country;
+        Locale locale;
+        int lang = cmbLanguage.getSelectedIndex();
+
+        switch (lang) {
+            case 0:
+                language = "en";
+                country = "US";
+                break;
+            case 1:
+                language = "in";
+                country = "ID";
+                break;
+            default:
+                language = "en";
+                country = "US";
+                break;
+        }
+        locale = new Locale(language, country);
+
+        bundle = ResourceBundle.getBundle("Internationalization.Bundle", locale);
+        refreshTexts();
+    }
+
+    private void refreshTexts() {
+        setTitle(bundle.getString("LoginForm.title"));
+        lblUsername.setText(bundle.getString("LoginForm.lblUsername.text"));
+        lblPassword.setText(bundle.getString("LoginForm.lblPassword.text"));
+        lblLanguage.setText(bundle.getString("LoginForm.lblLanguage.text"));
+        lblNewUser.setText(bundle.getString("LoginForm.lblNewUser.text"));
+        lblSignup.setText(bundle.getString("LoginForm.lblSignup.text"));
+        btnLogin.setText("Login");
     }
 
     /**
@@ -42,17 +107,21 @@ public class LoginForm extends javax.swing.JFrame {
         txtUsername = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
         btnLogin = new javax.swing.JButton();
-        jbUsername = new javax.swing.JLabel();
-        jbPassword = new javax.swing.JLabel();
+        lblUsername = new javax.swing.JLabel();
+        lblPassword = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jNewUser = new javax.swing.JLabel();
-        jSignup = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        lblNewUser = new javax.swing.JLabel();
+        lblSignup = new javax.swing.JLabel();
+        cmbLanguage = new javax.swing.JComboBox<>();
+        lblLanguage = new javax.swing.JLabel();
+        ProgressBar = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(143, 179, 226));
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
         jPanel1.setPreferredSize(new java.awt.Dimension(400, 300));
 
         txtUsername.setText(" ");
@@ -76,14 +145,18 @@ public class LoginForm extends javax.swing.JFrame {
             }
         });
 
-        jbUsername.setText("Username :");
+        lblUsername.setText("Username ");
 
-        jbPassword.setText("Password :");
+        lblPassword.setText("Password ");
 
         jPanel2.setBackground(new java.awt.Color(30, 46, 79));
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/images/resep logo.png"))); // NOI18N
         jLabel2.setToolTipText("");
+
+        jLabel3.setFont(new java.awt.Font("Bahnschrift", 1, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("ChefNote");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -92,65 +165,93 @@ public class LoginForm extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(jLabel2)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
+                .addGap(12, 12, 12)
                 .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(226, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel2))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
                         .addComponent(jLabel1))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel2)))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jNewUser.setText("New User ?");
+        lblNewUser.setText("New User ?");
 
-        jSignup.setText("Signup ");
+        lblSignup.setText("Signup ");
+
+        cmbLanguage.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "English", "Indonesia" }));
+        cmbLanguage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbLanguageActionPerformed(evt);
+            }
+        });
+
+        lblLanguage.setText("Choose Language:");
+
+        ProgressBar.setBackground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(51, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(49, 49, 49)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jNewUser)
+                        .addComponent(lblNewUser)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSignup))
-                    .addComponent(jbPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblSignup)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(ProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnLogin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jbUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtUsername)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE))
-                .addGap(51, 51, 51))
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(lblLanguage)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbLanguage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38)
-                .addComponent(jbUsername)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmbLanguage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblLanguage))
+                .addGap(18, 18, 18)
+                .addComponent(lblUsername)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(jbPassword)
+                .addGap(18, 18, 18)
+                .addComponent(lblPassword)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                .addGap(32, 32, 32)
                 .addComponent(btnLogin)
-                .addGap(27, 27, 27)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jNewUser)
-                    .addComponent(jSignup))
-                .addGap(39, 39, 39))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblNewUser)
+                        .addComponent(lblSignup))
+                    .addComponent(ProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -161,14 +262,14 @@ public class LoginForm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
-        // TODO add your handling code here:
+        btnLogin.doClick();
     }//GEN-LAST:event_txtPasswordActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
@@ -180,41 +281,60 @@ public class LoginForm extends javax.swing.JFrame {
             return;
         }
 
-        try (Connection conn = DBUtil.getConnection()) {
-            String sql = "SELECT * FROM users WHERE username = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
+        // Tampilkan progress bar di thread UI
+        SwingUtilities.invokeLater(() -> ProgressBar.setVisible(true));
 
-            if (rs.next()) {
-                String storedHash = rs.getString("password_hash");
-                String inputHash = CryptoUtil.hashPassword(password);
+        // Jalankan login di thread terpisah:
+        new Thread(() -> {
+            try (Connection conn = DBUtil.getConnection()) {
+                String sql = "SELECT * FROM users WHERE username = ?";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setString(1, username);
+                ResultSet rs = ps.executeQuery();
 
-                if (storedHash.equals(inputHash)) {
-                    int userId = rs.getInt("id");
-                    User user = new User(userId, username, storedHash);
+                if (rs.next()) {
+                    String storedHash = rs.getString("password_hash");
+                    String inputHash = CryptoUtil.hashPassword(password);
 
-                    // ✅ Tambahkan thread reminder
-                    new thread.ReminderThread("Selamat datang, " + username + "!", 2).start();
+                    if (storedHash.equals(inputHash)) {
+                        int userId = rs.getInt("id");
+                        User user = new User(userId, username, storedHash, password);
 
-                    // ✅ Pindah ke MainMenuForm
-                    new MainMenuForm(user).setVisible(true);
-                    this.dispose();
+                        SwingUtilities.invokeLater(() -> {
+                            ProgressBar.setVisible(false); // sembunyikan progress bar
+                            JOptionPane.showMessageDialog(this, "Selamat datang, " + user.getUsername() + "!");
+                            new MainMenuForm(user).setVisible(true);
+                            dispose();
+                        });
+                    } else {
+                        SwingUtilities.invokeLater(() -> {
+                            ProgressBar.setVisible(false);
+                            JOptionPane.showMessageDialog(this, "Password salah.");
+                        });
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(this, "Password salah.");
+                    SwingUtilities.invokeLater(() -> {
+                        ProgressBar.setVisible(false);
+                        JOptionPane.showMessageDialog(this, "User tidak ditemukan.");
+                    });
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "User tidak ditemukan.");
+            } catch (Exception e) {
+                e.printStackTrace();
+                SwingUtilities.invokeLater(() -> {
+                    ProgressBar.setVisible(false);
+                    JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+                });
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
-            e.printStackTrace();
-        }
+        }).start();
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
-        // TODO add your handling code here:
+        txtPassword.requestFocus();
     }//GEN-LAST:event_txtUsernameActionPerformed
+
+    private void cmbLanguageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbLanguageActionPerformed
+
+    }//GEN-LAST:event_cmbLanguageActionPerformed
 
     /**
      * @param args the command line arguments
@@ -252,15 +372,19 @@ public class LoginForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JProgressBar ProgressBar;
     private javax.swing.JButton btnLogin;
+    private javax.swing.JComboBox<String> cmbLanguage;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jNewUser;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JLabel jSignup;
-    private javax.swing.JLabel jbPassword;
-    private javax.swing.JLabel jbUsername;
+    private javax.swing.JLabel lblLanguage;
+    private javax.swing.JLabel lblNewUser;
+    private javax.swing.JLabel lblPassword;
+    private javax.swing.JLabel lblSignup;
+    private javax.swing.JLabel lblUsername;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables

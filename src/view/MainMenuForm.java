@@ -4,35 +4,38 @@
  */
 package view;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import model.User;
 import view.LoginForm;
 import view.RecipeForm;
-import util.I18nUtil;
-
 
 /**
  *
  * @author LENOVO
  */
 public class MainMenuForm extends javax.swing.JFrame {
-    
+
     private User currentUser;
+    private List<String> history;  // ✅ Ini contoh generic tanpa class baru
 
-
-    /**
-     * Creates new form MainMenuForm
-     */
     public MainMenuForm(User user) {
-        initComponents();
         this.currentUser = user;
-        
-        setTitle(I18nUtil.get("app.title"));
-        lblWelcome.setText(I18nUtil.get("menu.welcome") + " " + user.getUsername());
-        
-        btnTambah.setText(I18nUtil.get("menu.add"));
-        btnLihatResep.setText(I18nUtil.get("menu.list"));
-        btnLogout.setText(I18nUtil.get("menu.logout"));
+        initComponents();
+
+        setTitle("ChefNote");
+        lblWelcome.setText("Selamat datang, " + user.getUsername());
+        lblDesc.setText("Kelola resep masakanmu dengan mudah di sini.");
+        btnTambah.setText("➕ Tambah Resep");
+        btnLihatResep.setText("📄 Lihat Resep");
+        btnEdit.setText("👤 Profile");
+        btnLogout.setText("Logout");
+
+        // ✅ Contoh generic
+        history = new ArrayList<>();
+        history.add("User login: " + user.getUsername());
+        System.out.println("History: " + history);
     }
 
     private MainMenuForm() {
@@ -51,41 +54,55 @@ public class MainMenuForm extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         lblWelcome = new javax.swing.JLabel();
         btnTambah = new javax.swing.JButton();
         btnLihatResep = new javax.swing.JButton();
         btnLogout = new javax.swing.JButton();
         lblDesc = new javax.swing.JLabel();
+        btnEdit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(143, 179, 226));
-        jPanel1.setPreferredSize(new java.awt.Dimension(500, 400));
+        jPanel1.setPreferredSize(new java.awt.Dimension(600, 500));
 
         jPanel2.setBackground(new java.awt.Color(30, 46, 79));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/images/resep logo.png"))); // NOI18N
+
+        jLabel3.setFont(new java.awt.Font("Bahnschrift", 1, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("ChefNote");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addGap(21, 21, 21)
                 .addComponent(jLabel1)
-                .addContainerGap(328, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addComponent(jLabel3)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         lblWelcome.setText("Selamat datang, Marsha!");
 
         btnTambah.setText("➕  Tambah Resep   ");
+        btnTambah.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btnTambah.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTambahActionPerformed(evt);
@@ -93,6 +110,7 @@ public class MainMenuForm extends javax.swing.JFrame {
         });
 
         btnLihatResep.setText("📄 Lihat Daftar Resep");
+        btnLihatResep.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btnLihatResep.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLihatResepActionPerformed(evt);
@@ -108,6 +126,14 @@ public class MainMenuForm extends javax.swing.JFrame {
 
         lblDesc.setText("Kelola resep masakanmu dengan mudah di sini.");
 
+        btnEdit.setText("👤 Edit Profile");
+        btnEdit.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -116,18 +142,25 @@ public class MainMenuForm extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(37, 37, 37)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnLogout)
-                            .addComponent(btnLihatResep, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnTambah, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(127, 127, 127)
+                        .addComponent(lblWelcome))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(70, 70, 70)
-                        .addComponent(lblDesc))
+                        .addComponent(lblDesc)))
+                .addContainerGap(79, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(127, 127, 127)
-                        .addComponent(lblWelcome)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnLihatResep)
+                            .addComponent(btnLogout))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnTambah, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                            .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,13 +170,15 @@ public class MainMenuForm extends javax.swing.JFrame {
                 .addComponent(lblWelcome)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblDesc)
-                .addGap(55, 55, 55)
+                .addGap(34, 34, 34)
+                .addComponent(btnEdit)
+                .addGap(18, 18, 18)
                 .addComponent(btnTambah)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(btnLihatResep)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addGap(47, 47, 47)
                 .addComponent(btnLogout)
-                .addGap(35, 35, 35))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -154,25 +189,31 @@ public class MainMenuForm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-    new LoginForm().setVisible(true);
-    this.dispose();
+        new LoginForm().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnLihatResepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLihatResepActionPerformed
-        // TODO add your handling code here:
+        new LihatResepForm(currentUser).setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnLihatResepActionPerformed
 
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
         new RecipeForm(currentUser).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnTambahActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        new EditProfileForm(currentUser).setVisible(true);
+        dispose();
+    }//GEN-LAST:event_btnEditActionPerformed
 
     /**
      * @param args the command line arguments
@@ -204,16 +245,20 @@ public class MainMenuForm extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainMenuForm().setVisible(true);
+                User dummyUser = new User(1, "Admin", "dummyhash", "admin@example.com");
+                new MainMenuForm(dummyUser).setVisible(true);
+
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnLihatResep;
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnTambah;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblDesc;

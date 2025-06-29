@@ -30,9 +30,14 @@ public class RecipeForm extends javax.swing.JFrame {
      */
     public RecipeForm(User user) {
         initComponents();
+
+        this.setSize(600, 700);              // ukuran tetap
+        this.setLocationRelativeTo(null);   // di tengah layar
+        this.setResizable(false);           // tidak bisa resize
+
         this.currentUser = user;
 
-        // Isi combo box kategori dan kesulitan
+        // isi combo box
         cmbCategory.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {
             "Sarapan", "Makan Siang", "Makan Malam", "Cemilan", "Minuman", "Dessert", "Lainnya"
         }));
@@ -41,6 +46,7 @@ public class RecipeForm extends javax.swing.JFrame {
             "Mudah", "Sedang", "Sulit"
         }));
     }
+
 
     private RecipeForm() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -58,6 +64,7 @@ public class RecipeForm extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         lblTambahResep = new javax.swing.JLabel();
         txtTitle = new javax.swing.JTextField();
         cmbCategory = new javax.swing.JComboBox<>();
@@ -79,12 +86,16 @@ public class RecipeForm extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(143, 179, 226));
-        jPanel1.setPreferredSize(new java.awt.Dimension(700, 600));
+        jPanel1.setPreferredSize(new java.awt.Dimension(600, 700));
 
         jPanel2.setBackground(new java.awt.Color(30, 46, 79));
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/images/resep logo.png"))); // NOI18N
         jLabel2.setText(" ");
+
+        jLabel3.setFont(new java.awt.Font("Bahnschrift", 1, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("ChefNote");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -93,13 +104,17 @@ public class RecipeForm extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -158,33 +173,34 @@ public class RecipeForm extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(172, 172, 172)
-                .addComponent(lblTambahResep)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(50, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lblSteps)
-                    .addComponent(lblIngredients)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnBatal)
-                        .addGap(196, 196, 196)
-                        .addComponent(btnSimpan))
+                        .addGap(115, 115, 115)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblSteps)
+                            .addComponent(lblIngredients)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnBatal)
+                                .addGap(196, 196, 196)
+                                .addComponent(btnSimpan))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblTitle)
+                                    .addComponent(lblCategory)
+                                    .addComponent(lblDifficulty)
+                                    .addComponent(lblDuration))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(spnDuration, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(cmbCategory, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txtTitle, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(cmbDifficulty, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jScrollPane3)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblTitle)
-                            .addComponent(lblCategory)
-                            .addComponent(lblDifficulty)
-                            .addComponent(lblDuration))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(spnDuration, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(cmbCategory, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtTitle, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(cmbDifficulty, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jScrollPane3)
-                    .addComponent(jScrollPane1))
-                .addGap(44, 44, 44))
+                        .addGap(248, 248, 248)
+                        .addComponent(lblTambahResep)))
+                .addContainerGap(145, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -220,18 +236,18 @@ public class RecipeForm extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnBatal)
                     .addComponent(btnSimpan))
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 547, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE)
         );
 
         pack();
@@ -289,9 +305,6 @@ public class RecipeForm extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnBatalActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -330,6 +343,7 @@ public class RecipeForm extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cmbCategory;
     private javax.swing.JComboBox<String> cmbDifficulty;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -347,3 +361,4 @@ public class RecipeForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtTitle;
     // End of variables declaration//GEN-END:variables
 }
+
