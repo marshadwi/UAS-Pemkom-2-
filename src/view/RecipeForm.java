@@ -14,16 +14,23 @@ import view.MainMenuForm;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import javax.swing.JFileChooser;
 
 /**
  *
  * @author LENOVO
  */
 public class RecipeForm extends javax.swing.JFrame {
-    
-    private User currentUser;
 
+    private User currentUser;
+    private boolean isEditMode = false;
+    private Recipe currentRecipe;
+    private File selectedImageFile;
+    private String existingImageFileName; // menyimpan nama gambar lama jika edit
 
     /**
      * Creates new form RecipeForm
@@ -38,18 +45,33 @@ public class RecipeForm extends javax.swing.JFrame {
         this.currentUser = user;
 
         // isi combo box
-        cmbCategory.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {
+        cmbCategory.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{
             "Sarapan", "Makan Siang", "Makan Malam", "Cemilan", "Minuman", "Dessert", "Lainnya"
         }));
 
-        cmbDifficulty.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {
+        cmbDifficulty.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{
             "Mudah", "Sedang", "Sulit"
         }));
     }
 
+    public RecipeForm(User user, Recipe recipeToEdit) {
+        this(user); // panggil constructor utama
+        this.isEditMode = true;
+        this.currentRecipe = recipeToEdit;
 
-    private RecipeForm() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        // Isi data ke form
+        txtTitle.setText(recipeToEdit.getTitle());
+        cmbCategory.setSelectedItem(recipeToEdit.getCategory());
+        txtIngredients.setText(recipeToEdit.getIngredients());
+        txtSteps.setText(recipeToEdit.getSteps());
+        spnDuration.setValue(recipeToEdit.getDuration());
+        cmbDifficulty.setSelectedItem(recipeToEdit.getDifficulty());
+
+        existingImageFileName = recipeToEdit.getImageFileName(); // ⬅ Tambahan
+        lblPreviewGambar.setText(existingImageFileName);         // ⬅ Tambahan
+
+        lblTambahResep.setText("Edit Resep");
+        btnSimpan.setText("Update");
     }
 
     /**
@@ -82,6 +104,8 @@ public class RecipeForm extends javax.swing.JFrame {
         lblCategory = new javax.swing.JLabel();
         lblDuration = new javax.swing.JLabel();
         lblDifficulty = new javax.swing.JLabel();
+        lblPreviewGambar = new javax.swing.JLabel();
+        btnPilihGambar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -118,6 +142,7 @@ public class RecipeForm extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        lblTambahResep.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblTambahResep.setText("Tambah Resep");
 
         txtTitle.setText(" ");
@@ -141,7 +166,7 @@ public class RecipeForm extends javax.swing.JFrame {
         txtSteps.setRows(5);
         jScrollPane3.setViewportView(txtSteps);
 
-        btnBatal.setText("Batal");
+        btnBatal.setText("Kembali");
         btnBatal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBatalActionPerformed(evt);
@@ -167,6 +192,15 @@ public class RecipeForm extends javax.swing.JFrame {
 
         lblDifficulty.setText("Kesulitan :");
 
+        lblPreviewGambar.setText(" ");
+
+        btnPilihGambar.setText("Pilih Gambar");
+        btnPilihGambar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPilihGambarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -175,13 +209,17 @@ public class RecipeForm extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(115, 115, 115)
+                        .addGap(86, 86, 86)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(lblSteps)
                             .addComponent(lblIngredients)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(btnBatal)
-                                .addGap(196, 196, 196)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnPilihGambar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblPreviewGambar, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnSimpan))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,11 +234,11 @@ public class RecipeForm extends javax.swing.JFrame {
                                     .addComponent(txtTitle, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(cmbDifficulty, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addComponent(jScrollPane3)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jScrollPane1)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(248, 248, 248)
                         .addComponent(lblTambahResep)))
-                .addContainerGap(145, Short.MAX_VALUE))
+                .addContainerGap(152, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,8 +273,10 @@ public class RecipeForm extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnBatal)
-                    .addComponent(btnSimpan))
-                .addContainerGap(42, Short.MAX_VALUE))
+                    .addComponent(btnSimpan)
+                    .addComponent(lblPreviewGambar)
+                    .addComponent(btnPilihGambar))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -271,39 +311,106 @@ public class RecipeForm extends javax.swing.JFrame {
         }
 
         try (Connection conn = DBUtil.getConnection()) {
-            String sql = "INSERT INTO recipes (user_id, title, category, ingredients, steps, duration, difficulty) " +
-                         "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String imageFileName;
 
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, currentUser.getId());
-            ps.setString(2, title);
-            ps.setString(3, category);
-            ps.setString(4, ingredients);
-            ps.setString(5, steps);
-            ps.setInt(6, duration);
-            ps.setString(7, difficulty);
+            if (selectedImageFile != null) {
+                imageFileName = selectedImageFile.getName();
+            } else if (isEditMode) {
+                imageFileName = existingImageFileName;
+            } else {
+                JOptionPane.showMessageDialog(this, "Silakan pilih gambar terlebih dahulu.");
+                return;
+            }
 
-            ps.executeUpdate();
+            if (isEditMode && currentRecipe != null) {
+                // MODE UPDATE
+                String sql = "UPDATE recipes SET title = ?, category = ?, ingredients = ?, steps = ?, duration = ?, difficulty = ?, image_file_name = ? WHERE id = ? AND user_id = ?";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setString(1, title);
+                ps.setString(2, category);
+                ps.setString(3, ingredients);
+                ps.setString(4, steps);
+                ps.setInt(5, duration);
+                ps.setString(6, difficulty);
+                ps.setString(7, imageFileName);
+                ps.setInt(8, currentRecipe.getId());
+                ps.setInt(9, currentUser.getId());
 
-            // ✅ Simpan ke file .ser juga
-            Recipe<String> recipe = new Recipe<>(0, currentUser.getId(), title, category, ingredients, steps, duration, difficulty);
-            SerializationUtil.saveObject(recipe, "last_recipe.ser");
+                ps.executeUpdate();
 
-            // ✅ Tampilkan reminder
-            new ReminderThread("Resep berhasil disimpan!", 2).start();
+                JOptionPane.showMessageDialog(this, "✅ Resep berhasil diperbarui.");
+                this.dispose();
+                new LihatResepForm(currentUser).setVisible(true);
 
-            JOptionPane.showMessageDialog(this, "Resep berhasil disimpan!");
-            this.dispose(); // atau kembali ke menu utama
+            } else {
+                // MODE TAMBAH
+                String sql = "INSERT INTO recipes (user_id, title, category, ingredients, steps, duration, difficulty, image_file_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, currentUser.getId());
+                ps.setString(2, title);
+                ps.setString(3, category);
+                ps.setString(4, ingredients);
+                ps.setString(5, steps);
+                ps.setInt(6, duration);
+                ps.setString(7, difficulty);
+                ps.setString(8, imageFileName); // mungkin typo sebelumnya pakai setInt, harusnya string
+                ps.executeUpdate();
+
+                JOptionPane.showMessageDialog(this, "✅ Resep berhasil disimpan.");
+
+                // Reset form
+                txtTitle.setText("");
+                txtIngredients.setText("");
+                txtSteps.setText("");
+                spnDuration.setValue(1);
+                cmbCategory.setSelectedIndex(0);
+                cmbDifficulty.setSelectedIndex(0);
+            }
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Gagal menyimpan resep: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "❌ Gagal menyimpan resep: " + e.getMessage());
             e.printStackTrace();
         }
+
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     private void btnBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalActionPerformed
         new MainMenuForm(currentUser).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnBatalActionPerformed
+
+    private void btnPilihGambarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPilihGambarActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            selectedImageFile = fileChooser.getSelectedFile();
+
+            // Cek apakah gambar valid (opsional)
+            if (!selectedImageFile.getName().toLowerCase().matches(".*\\.(jpg|jpeg|png|gif)$")) {
+                JOptionPane.showMessageDialog(this, "File gambar harus JPG, PNG, atau GIF.");
+                selectedImageFile = null;
+                return;
+            }
+
+            // Tampilkan nama file di label preview
+            lblPreviewGambar.setText(selectedImageFile.getName());
+
+            // Salin gambar ke folder /src/view/images/
+            File targetDir = new File("view.images/");
+            if (!targetDir.exists()) {
+                targetDir.mkdirs();
+            }
+
+            File targetFile = new File(targetDir, selectedImageFile.getName());
+            try {
+                Files.copy(selectedImageFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Gagal menyimpan gambar: " + e.getMessage());
+                selectedImageFile = null;
+            }
+        }
+    }//GEN-LAST:event_btnPilihGambarActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -332,13 +439,13 @@ public class RecipeForm extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RecipeForm().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBatal;
+    private javax.swing.JButton btnPilihGambar;
     private javax.swing.JButton btnSimpan;
     private javax.swing.JComboBox<String> cmbCategory;
     private javax.swing.JComboBox<String> cmbDifficulty;
@@ -352,6 +459,7 @@ public class RecipeForm extends javax.swing.JFrame {
     private javax.swing.JLabel lblDifficulty;
     private javax.swing.JLabel lblDuration;
     private javax.swing.JLabel lblIngredients;
+    private javax.swing.JLabel lblPreviewGambar;
     private javax.swing.JLabel lblSteps;
     private javax.swing.JLabel lblTambahResep;
     private javax.swing.JLabel lblTitle;
@@ -361,4 +469,3 @@ public class RecipeForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtTitle;
     // End of variables declaration//GEN-END:variables
 }
-

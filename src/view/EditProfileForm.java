@@ -67,6 +67,8 @@ public class EditProfileForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(143, 179, 226));
+
         jPanel2.setBackground(new java.awt.Color(30, 46, 79));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/images/resep logo.png"))); // NOI18N

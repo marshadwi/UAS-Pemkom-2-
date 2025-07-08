@@ -6,20 +6,32 @@ package view;
 
 import db.DBUtil;
 import model.User;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.Recipe;
+import util.SerializationUtil;
 
 /**
  *
  * @author LENOVO
  */
 public class LihatResepForm extends javax.swing.JFrame {
-    
+
     private User currentUser;
 
     /**
@@ -29,32 +41,57 @@ public class LihatResepForm extends javax.swing.JFrame {
         initComponents();
         this.currentUser = user;
         tampilkanResep();
+        StartClock();
+
+    }
+
+    private void tampilkanResep() {
+        try (Connection conn = DBUtil.getConnection()) {
+            String sql = "SELECT id, title, category, ingredients, steps, duration, difficulty FROM recipes WHERE user_id = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, currentUser.getId());
+            ResultSet rs = ps.executeQuery();
+
+            DefaultTableModel model = (DefaultTableModel) tblResep.getModel();
+            model.setRowCount(0);
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("title"),
+                    rs.getString("category"),
+                    rs.getString("ingredients"),
+                    rs.getString("steps"),
+                    rs.getInt("duration") + " menit",
+                    rs.getString("difficulty"),
+                    rs.getInt("id") // Kolom ID tersembunyi
+                });
+            }
+
+            // Sembunyikan kolom ID
+            tblResep.getColumnModel().getColumn(6).setMinWidth(0);
+            tblResep.getColumnModel().getColumn(6).setMaxWidth(0);
+            tblResep.getColumnModel().getColumn(6).setWidth(0);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal memuat data: " + e.getMessage());
+        }
     }
     
-    private void tampilkanResep() {
-    try (Connection conn = DBUtil.getConnection()) {
-        String sql = "SELECT title, category, duration, difficulty FROM recipes WHERE user_id = ?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setInt(1, currentUser.getId()); // ambil id user
-        ResultSet rs = ps.executeQuery();
-
-        DefaultTableModel model = (DefaultTableModel) tblResep.getModel();
-        model.setRowCount(0); // bersihkan isi tabel
-
-        while (rs.next()) {
-            model.addRow(new Object[]{
-                rs.getString("title"),
-                rs.getString("category"),
-                rs.getInt("duration") + " menit",
-                rs.getString("difficulty")
-            });
-        }
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Gagal memuat data: " + e.getMessage());
+    private void StartClock() {
+//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        java.util.Timer t = new java.util.Timer();
+        t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Calendar c = Calendar.getInstance();
+                SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+                String waktu = df.format(c.getTime());
+                
+                // Pastikan perubahan UI dilakukan di Event Dispatch Thread (EDT)
+                javax.swing.SwingUtilities.invokeLater(() -> lblClock.setText(waktu));
+            }
+        }, 0, 1000);  // Start immediately, update every 1 second
     }
-}
-
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -64,6 +101,8 @@ public class LihatResepForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jButton1 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -74,8 +113,18 @@ public class LihatResepForm extends javax.swing.JFrame {
         btnKembali = new javax.swing.JButton();
         btnUnduh = new javax.swing.JButton();
         btnMuat = new javax.swing.JButton();
+        btnHapus = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
+        btnLihatDetail = new javax.swing.JButton();
+        lblClock = new javax.swing.JLabel();
+
+        jButton1.setText("jButton1");
+
+        jLabel2.setText("jLabel2");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(143, 179, 226));
 
         jPanel2.setBackground(new java.awt.Color(30, 46, 79));
 
@@ -108,20 +157,26 @@ public class LihatResepForm extends javax.swing.JFrame {
                 .addGap(18, 18, 18))
         );
 
+        lblDaftar.setFont(new java.awt.Font("Cambria", 0, 24)); // NOI18N
+        lblDaftar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblDaftar.setText("DAFTAR RESEP");
 
         tblResep.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Judul Resep", "Kategori", "Durasi", "Tingkat Kesulitan"
+                "Judul Resep", "Kategori", "Bahan", "Langkah", "Durasi", "Tingkat Kesulitan", "ID"
             }
         ));
         jScrollPane1.setViewportView(tblResep);
+        if (tblResep.getColumnModel().getColumnCount() > 0) {
+            tblResep.getColumnModel().getColumn(2).setResizable(false);
+        }
 
         btnKembali.setText("Kembali ke Menu Utama");
         btnKembali.addActionListener(new java.awt.event.ActionListener() {
@@ -131,6 +186,11 @@ public class LihatResepForm extends javax.swing.JFrame {
         });
 
         btnUnduh.setText("Unduh File");
+        btnUnduh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUnduhActionPerformed(evt);
+            }
+        });
 
         btnMuat.setText("Memuat File");
         btnMuat.addActionListener(new java.awt.event.ActionListener() {
@@ -139,68 +199,303 @@ public class LihatResepForm extends javax.swing.JFrame {
             }
         });
 
+        btnHapus.setText("Delete");
+        btnHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHapusActionPerformed(evt);
+            }
+        });
+
+        btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+
+        btnLihatDetail.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnLihatDetail.setText("Lihat Detail Resep");
+        btnLihatDetail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLihatDetailActionPerformed(evt);
+            }
+        });
+
+        lblClock.setText("waktu");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(lblDaftar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(27, 27, 27)
+                .addComponent(lblClock)
+                .addGap(23, 23, 23))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(btnKembali)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGap(29, 29, 29)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnKembali)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 421, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnUnduh)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnMuat))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(187, 187, 187)
-                        .addComponent(lblDaftar)))
-                .addContainerGap(17, Short.MAX_VALUE))
+                        .addGap(118, 118, 118)
+                        .addComponent(btnEdit)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnHapus)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnLihatDetail)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnUnduh)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnMuat)))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblDaftar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnUnduh)
-                    .addComponent(btnMuat))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(lblClock, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(lblDaftar, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnUnduh)
+                                .addComponent(btnMuat)
+                                .addComponent(btnLihatDetail)
+                                .addComponent(btnHapus)))
+                        .addGap(35, 35, 35)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnKembali)
-                .addContainerGap())
+                .addGap(30, 30, 30))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKembaliActionPerformed
-        new MainMenuForm(currentUser).setVisible(true);
-        dispose();
+       new MainMenuForm(currentUser).setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnKembaliActionPerformed
 
     private void btnMuatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMuatActionPerformed
-        // TODO add your handling code here:
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Pilih File Backup (.ser)");
+        int userSelection = fileChooser.showOpenDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            String path = fileChooser.getSelectedFile().getAbsolutePath();
+            try {
+                List<Recipe> resepList = (List<Recipe>) SerializationUtil.loadObject(path);
+                int count = 0;
+
+                try (Connection conn = DBUtil.getConnection()) {
+                    for (Recipe r : resepList) {
+                        String checkSql = "SELECT COUNT(*) FROM recipes WHERE user_id = ? AND title = ?";
+                        PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+                        checkStmt.setInt(1, currentUser.getId());
+                        checkStmt.setString(2, r.getTitle());
+                        ResultSet rs = checkStmt.executeQuery();
+                        rs.next();
+                        int exists = rs.getInt(1);
+
+                        if (exists == 0) {
+                            String insertSql = "INSERT INTO recipes (user_id, title, category, ingredients, steps, duration, difficulty) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                            PreparedStatement ps = conn.prepareStatement(insertSql);
+                            ps.setInt(1, currentUser.getId());
+                            ps.setString(2, r.getTitle());
+                            ps.setString(3, r.getCategory());
+                            ps.setString(4, r.getIngredients());
+                            ps.setString(5, r.getSteps());
+                            ps.setInt(6, r.getDuration());
+                            ps.setString(7, r.getDifficulty());
+                            ps.executeUpdate();
+                            count++;
+                        }
+                    }
+                }
+
+                JOptionPane.showMessageDialog(this, "✅ Berhasil memuat " + count + " resep baru.");
+                tampilkanResep(); // refresh tabel
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "❌ Gagal memuat file: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }//GEN-LAST:event_btnMuatActionPerformed
+
+    private void btnUnduhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnduhActionPerformed
+        try (Connection conn = DBUtil.getConnection()) {
+            String sql = "SELECT * FROM recipes WHERE user_id = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, currentUser.getId());
+            ResultSet rs = ps.executeQuery();
+
+            List<Recipe> listResep = new ArrayList<>();
+
+            while (rs.next()) {
+                Recipe recipe = new Recipe(
+                        rs.getInt("id"),
+                        rs.getInt("user_id"),
+                        rs.getString("title"),
+                        rs.getString("category"),
+                        rs.getString("ingredients"),
+                        rs.getString("steps"),
+                        rs.getInt("duration"),
+                        rs.getString("difficulty"),
+                        rs.getString("image_file_name")
+                );
+                listResep.add(recipe);
+            }
+
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Simpan file backup");
+            chooser.setSelectedFile(new File("backup_resep.ser"));
+
+            int option = chooser.showSaveDialog(this);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = chooser.getSelectedFile();
+                SerializationUtil.saveObject(listResep, selectedFile.getAbsolutePath());
+                JOptionPane.showMessageDialog(this, "✅ Resep berhasil dibackup ke file!");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "❌ Gagal backup: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnUnduhActionPerformed
+
+    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = tblResep.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih salah satu resep untuk dihapus.");
+            return;
+        }
+
+        String title = tblResep.getValueAt(selectedRow, 0).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Apakah kamu yakin ingin menghapus resep \"" + title + "\"?",
+                "Konfirmasi Hapus", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try (Connection conn = DBUtil.getConnection()) {
+                String sql = "DELETE FROM recipes WHERE user_id = ? AND title = ?";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, currentUser.getId());
+                ps.setString(2, title);
+                int affected = ps.executeUpdate();
+
+                if (affected > 0) {
+                    JOptionPane.showMessageDialog(this, "✅ Resep berhasil dihapus.");
+                    tampilkanResep(); // refresh tabel
+                } else {
+                    JOptionPane.showMessageDialog(this, "❌ Resep tidak ditemukan.");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Gagal menghapus resep: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_btnHapusActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = tblResep.getSelectedRow();
+        if (selectedRow != -1) {
+            int recipeId = Integer.parseInt(tblResep.getValueAt(selectedRow, 6).toString());
+            try (Connection conn = DBUtil.getConnection()) {
+                PreparedStatement ps = conn.prepareStatement("SELECT * FROM recipes WHERE id = ? AND user_id = ?");
+                ps.setInt(1, recipeId);
+                ps.setInt(2, currentUser.getId());
+
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    Recipe r = new Recipe(
+                            rs.getInt("id"),
+                            rs.getInt("user_id"),
+                            rs.getString("title"),
+                            rs.getString("category"),
+                            rs.getString("ingredients"),
+                            rs.getString("steps"),
+                            rs.getInt("duration"),
+                            rs.getString("difficulty"),
+                            rs.getString("image_file_name")
+                    );
+                    new RecipeForm(currentUser, r).setVisible(true);
+                    this.dispose();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(LihatResepForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnLihatDetailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLihatDetailActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = tblResep.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(null, "Pilih salah satu resep terlebih dahulu.");
+            return;
+        }
+
+        // Ambil data dari tabel
+        String title = tblResep.getValueAt(selectedRow, 0).toString();
+
+        try (Connection conn = DBUtil.getConnection()) {
+            String sql = "SELECT * FROM recipes WHERE title = ? AND user_id = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, title);
+            ps.setInt(2, currentUser.getId());
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Recipe recipe = new Recipe(
+                        rs.getInt("id"),
+                        rs.getInt("user_id"),
+                        rs.getString("title"),
+                        rs.getString("category"),
+                        rs.getString("ingredients"),
+                        rs.getString("steps"),
+                        rs.getInt("duration"),
+                        rs.getString("difficulty"),
+                        rs.getString("image_file_name")
+                );
+
+                // Tampilkan detail dalam form terpisah
+                new ResepDetail(currentUser, recipe).setVisible(true);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Gagal membuka detail resep: " + e.getMessage());
+        }
+
+    }//GEN-LAST:event_btnLihatDetailActionPerformed
 
     /**
      * @param args the command line arguments
@@ -216,16 +511,24 @@ public class LihatResepForm extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LihatResepForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LihatResepForm.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LihatResepForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LihatResepForm.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LihatResepForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LihatResepForm.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LihatResepForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LihatResepForm.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -238,14 +541,20 @@ public class LihatResepForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnHapus;
     private javax.swing.JButton btnKembali;
+    private javax.swing.JButton btnLihatDetail;
     private javax.swing.JButton btnMuat;
     private javax.swing.JButton btnUnduh;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblClock;
     private javax.swing.JLabel lblDaftar;
     private javax.swing.JTable tblResep;
     // End of variables declaration//GEN-END:variables

@@ -121,7 +121,7 @@ public class LoginForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel1.setBackground(new java.awt.Color(143, 179, 226));
         jPanel1.setPreferredSize(new java.awt.Dimension(400, 300));
 
         txtUsername.setText(" ");
@@ -198,7 +198,7 @@ public class LoginForm extends javax.swing.JFrame {
             }
         });
 
-        lblLanguage.setText("Choose Language:");
+        lblLanguage.setText("Choose Language :");
 
         ProgressBar.setBackground(new java.awt.Color(255, 255, 255));
 
